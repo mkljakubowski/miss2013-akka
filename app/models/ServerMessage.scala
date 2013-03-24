@@ -6,7 +6,8 @@ import play.api.libs.json.JsValue
 case class Position(x: Int, y: Int, z: Int)
 
 sealed abstract class ServerMessage
-case class GetUniqueId  ()                                                        extends ServerMessage
+
+//quickpath
 case class Join         (username: String, channel: Concurrent.Channel[JsValue])  extends ServerMessage
 case class Event        (username: String, event: JsValue)                        extends ServerMessage
 case class Move         (username: String, position: Position)                    extends ServerMessage
@@ -18,4 +19,9 @@ case class UpdateSquare (id: Int, size: Double, x: Int, y: Int, color: Int)     
 case class RemoveSquare (id: Int)                                                 extends ServerMessage
 case class IncreaseScore(bonus: Int)                                              extends ServerMessage
 case class UpdateSquares()                                                        extends ServerMessage
+
+//creatures
+case class GetUniqueId  ()                                                        extends ServerMessage
+case class UpdateEnv()                                                            extends ServerMessage
+case class NewEnv(envName: String)                                                extends ServerMessage
 
