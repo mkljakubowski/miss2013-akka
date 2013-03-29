@@ -12,6 +12,6 @@ object Application extends Controller {
   }
 
   def stream = WebSocket.async[JsValue] { request =>
-    models.Server.join()
+    models.EnvServer.join()
 	}
 }

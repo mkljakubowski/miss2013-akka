@@ -27,7 +27,7 @@ class Cell extends Actor {
     val x = (pos.x + sin(direction) * speed) % Environment.screenSize.x
     val y = (pos.y + cos(direction) * speed) % Environment.screenSize.y
     pos = new Position(x, y)
-    speed += Random.nextDouble()
-    direction += Random.nextDouble()
+    speed += Random.nextDouble() - 0.5
+    direction += Random.nextDouble() - 0.5
   }
 }

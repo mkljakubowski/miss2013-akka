@@ -47,9 +47,8 @@ class EnvServer extends Actor {
       sender ! {id += 1; id}
 
     case Join(envName, channel) =>
-      val envActorRef = context.actorOf(Props(new Environment(envName, channel)), name = envName)
+      val envActorRef = context.actorOf(Props(new Environment(envName, channel, DNA())), name = envName)
       environments = environments + (envName -> envActorRef)
-      envActorRef ! NewEnv(envName, DNA())
 
 //    case Event(username, event) =>
 //      def getPos(axis: String) = (event \ axis).asOpt[Int]
@@ -64,10 +63,10 @@ class EnvServer extends Actor {
 //          play.Logger.warn("Unable to parse message %s from user %s".format(event.toString(), username))
 //      }
 //
-//    case Quit(username) =>
-//      players = players - username
-//
-//    case otherMsg =>
-//      players.values.foreach(_ ! otherMsg)
+    case Quit(envName) =>
+      environments = environments - envName
+
+    case otherMsg =>
+      environments.values.foreach(_ ! otherMsg)
   }
 }

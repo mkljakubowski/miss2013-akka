@@ -9,9 +9,8 @@ object Environment {
   val screenSize = new Position(800, 450)
 }
 
-class Environment(envName: String, channel: Concurrent.Channel[JsValue]) extends Actor {
+class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetDNA : DNA) extends Actor {
   var cells = Map.empty[String, ActorRef]
-  val targetDNA: DNA = DNA()
 
   def receive = {
     case NewEnv(_, _) => {
