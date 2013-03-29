@@ -19,7 +19,7 @@ object EnvServer {
   def join(): scala.concurrent.Future[(Iteratee[JsValue,_], Enumerator[JsValue])] = {
     (serv ? GetUniqueId()).map {
       case envId: Int =>
-        val envName   = envId.toString
+        val envName :String = envId.toString
         val enumerator = Concurrent.unicast[JsValue](serv ! Join(envName, _))
         val iteratee   = Iteratee.foreach[JsValue](serv ! Event(envName, _)).mapDone(_ => serv ! Quit(envName))
         (iteratee, enumerator)
@@ -36,11 +36,10 @@ object EnvServer {
 
 class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
-  val cellServ = context.actorOf(Props[CellServer])
   var id: Int = 0
 
   Akka.system.scheduler.schedule(0 seconds, 250 milliseconds) {
-    environments.foreach( _._2 ! UpdateEnv() )
+    environments.foreach( _._2 ! Update() )
   }
 
   def receive = {
@@ -50,7 +49,7 @@ class EnvServer extends Actor {
     case Join(envName, channel) =>
       val envActorRef = context.actorOf(Props(new Environment(envName, channel)), name = envName)
       environments = environments + (envName -> envActorRef)
-      cellServ ! NewEnv(envName)
+      envActorRef ! NewEnv(envName, DNA())
 
 //    case Event(username, event) =>
 //      def getPos(axis: String) = (event \ axis).asOpt[Int]

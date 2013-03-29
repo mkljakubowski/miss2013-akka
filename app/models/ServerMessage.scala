@@ -3,7 +3,9 @@ package models
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.JsValue
 
-case class Position(x: Int, y: Int, z: Int)
+case class Position(x: Double, y: Double, z: Double){
+  def this(x:Double, y:Double) = this(x,y,0.0)
+}
 
 sealed abstract class ServerMessage
 
@@ -22,6 +24,6 @@ case class UpdateSquares()                                                      
 
 //creatures
 case class GetUniqueId  ()                                                        extends ServerMessage
-case class UpdateEnv()                                                            extends ServerMessage
-case class NewEnv(envName: String)                                                extends ServerMessage
+case class Update       ()                                                        extends ServerMessage
+case class NewEnv       (envName: String, envDNA : DNA)                           extends ServerMessage
 
