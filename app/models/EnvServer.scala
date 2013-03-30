@@ -38,7 +38,7 @@ class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
   var id: Int = 0
 
-  Akka.system.scheduler.schedule(0 seconds, 250 milliseconds) {
+  Akka.system.scheduler.schedule(0 seconds, 200 milliseconds) {
     environments.foreach( _._2 ! Update() )
   }
 
