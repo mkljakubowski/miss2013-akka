@@ -29,7 +29,6 @@ class Scene
       @environment.updateFromServer(data)
     )
 
-#    pointerLock.onMouseMove(@particleSize, @particleSize * 1.5, @ws.send)
 
     instructions.addEventListener('click', (event) => pointerLock.lockPointer())
 
@@ -40,4 +39,3 @@ class Scene
     requestAnimationFrame(@animate)
     @renderer.render(@scene, @camera)
     @stats.update()
-#    @players.update()

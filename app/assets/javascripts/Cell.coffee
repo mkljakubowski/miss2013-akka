@@ -16,17 +16,23 @@ context.fill()
 context.lineWidth = 0
 context.stroke()
 circleTexture = new THREE.Texture( canvas )
-circleTexture.needsUpdate = true
-circleMaterial = new THREE.MeshBasicMaterial( {map: circleTexture} );
 circleGeo = new THREE.CircleGeometry( 1, 10, 0, 2 * Math.PI )
 
 class Cell
   constructor: (@cellName, @dna, radius, position, @scene) ->
-    @sprite = new THREE.Mesh( circleGeo, circleMaterial )
+    @color = new THREE.Color()
+    @sprite = new THREE.Mesh( circleGeo, @createMatrial() )
     @sprite.position.x = position.x
     @sprite.position.y = position.y
     @scene.add(@sprite)
-#    show on scene
 
-  update: (dna, radius, position) ->
+  update: (@dna, radius, position) ->
+    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
     @sprite.position.set(position.x, position.y, 0 )
+
+  createMatrial: () ->
+    tex = circleTexture.clone()
+    tex.needsUpdate = true
+    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
+    new THREE.MeshBasicMaterial( {map: tex, color : @color} )
+
