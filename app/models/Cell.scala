@@ -9,7 +9,7 @@ class Cell(name : String) extends Actor {
   var targetDNA : DNA = null
   def fitness = dna - targetDNA
   def radius = 5 + fitness
-  var pos : Position = new Position(Random.nextDouble()*800, Random.nextDouble()*450)
+  var pos : Position = new Position(Random.nextDouble()*200 - 100, Random.nextDouble()*100 - 50)
   var envId : String = ""
   var energy = 50
   var speed = 0.0
@@ -30,11 +30,15 @@ class Cell(name : String) extends Actor {
   }
 
   def updatePosition() = {
-    val x = (pos.x + sin(direction) * speed) % Environment.screenSize.x
-    val y = (pos.y + cos(direction) * speed) % Environment.screenSize.y
+    val x = (pos.x + sin(direction) * speed)
+    val y = (pos.y + cos(direction) * speed)
     pos = new Position(x, y)
     speed += Random.nextDouble() - 0.5
     direction += Random.nextDouble() - 0.5
+    if (outOfBoundries) direction -= Pi
   }
+
+  def outOfBoundries : Boolean =
+    pos.x > Environment.screenSize.x || pos.x < -Environment.screenSize.x || pos.y < -Environment.screenSize.y || pos.y > Environment.screenSize.y
 
 }
