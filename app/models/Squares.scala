@@ -29,7 +29,7 @@ class Squares extends Actor {
 
   def receive = {
     case PathClosed(trail) =>
-      val polygon = new Polygon(trail.map(_.x).toArray, trail.map(_.y).toArray, trail.size)
+      val polygon = new Polygon(trail.map(_.x.toInt).toArray, trail.map(_.y.toInt).toArray, trail.size)
       val closedSquares = squares.filter { square =>
         polygon.contains(square.getModel)
       }

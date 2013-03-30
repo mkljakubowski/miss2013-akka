@@ -1,26 +1,32 @@
 package models
 
-import akka.actor.Actor
+import akka.actor.{ActorRef, Actor}
 import util.Random
 import scala.math._
 
-class Cell extends Actor {
+class Cell(name : String) extends Actor {
   val dna : DNA = DNA()
   var targetDNA : DNA = null
   def fitness = dna - targetDNA
+  def radius = 5 + fitness
   var pos : Position = new Position(Random.nextDouble()*800, Random.nextDouble()*450)
   var envId : String = ""
   var energy = 50
   var speed = 0.0
   var direction = Random.nextDouble() * Pi * 2
+  var env : ActorRef = null
 
   def receive = {
+
     case NewEnv(envName: String, envDNA : DNA) =>
       targetDNA = envDNA
       envId = envName
-    case Update() => {
+      env = sender
+
+    case Update() =>
       updatePosition()
-    }
+      env ! UpdateCell(name, pos, radius)
+
   }
 
   def updatePosition() = {
@@ -30,4 +36,5 @@ class Cell extends Actor {
     speed += Random.nextDouble() - 0.5
     direction += Random.nextDouble() - 0.5
   }
+
 }
