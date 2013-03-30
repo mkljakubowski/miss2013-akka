@@ -1,6 +1,7 @@
 package models
 
 import util.Random
+import play.api.libs.json.{Json, JsValue}
 
 class DNA {
   var r = Random.nextInt(255)
@@ -17,6 +18,9 @@ class DNA {
   def -(env:DNA): Int = {
     (env.r - r) + (env.g - g) + (env.b - b)
   }
+
+  def asJSON() : JsValue =
+    Json.obj("r" -> r, "g" -> g, "b" -> b)
 }
 
 object DNA {

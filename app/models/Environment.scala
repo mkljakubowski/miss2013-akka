@@ -12,21 +12,21 @@ object Environment {
 class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetDNA : DNA) extends Actor {
   var cells = Map.empty[String, ActorRef]
 
-  def receive = {
+  (0 until Environment.noCellsPerEnv).foreach{ cellNo =>
+    val cellName = (envName+"cell"+cellNo)
+    val cellActorRef = context.actorOf(Props(new Cell(cellName)), name = cellName)
+    cells = cells + ( cellName -> cellActorRef )
+    cellActorRef ! NewEnv(envName, targetDNA)
+  }
 
-    case NewEnv(_, _) =>
-      (0 until Environment.noCellsPerEnv).foreach{ cellNo =>
-        val cellName = (envName+"cell"+cellNo)
-        val cellActorRef = context.actorOf(Props(new Cell(cellName)), cellName)
-        cells = cells + ( cellName -> cellActorRef )
-        cellActorRef ! NewEnv(envName, targetDNA)
-      }
+  def receive = {
 
     case Update() =>
       cells.foreach{ _._2 ! Update() }
 
-    case UpdateCell(cellId, pos, r) =>
-      channel.push(Json.obj("type" -> "UpdateCell", "cellId" -> cellId, "x" -> pos.x, "y" -> pos.y, "r" -> r))
+    case UpdateCell(cellName, pos, r, dna) =>
+      channel.push(Json.obj("type" -> "UpdateCell", "cellName" -> cellName, "x" -> pos.x, "y" -> pos.y, "r" -> r, "dna" -> dna.asJSON()))
 
   }
+
 }

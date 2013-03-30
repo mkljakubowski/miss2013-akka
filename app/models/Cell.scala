@@ -25,7 +25,7 @@ class Cell(name : String) extends Actor {
 
     case Update() =>
       updatePosition()
-      env ! UpdateCell(name, pos, radius)
+      sender ! UpdateCell(name, pos, radius, dna)
 
   }
 

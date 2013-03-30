@@ -22,19 +22,14 @@ class Scene
       () => instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API'
     )
 
-    @particleSize = 4
-    @players = new Players(50, @particleSize, @scene)
-    @squares = new Squares(@scene)
+    @environment = new Environment(@scene)
 
     @ws = new Websocket((e) =>
       data = JSON.parse(e.data)
-      if data.type == "UpdateSquare" or data.type == "RemoveSquare"
-        @squares.updateFromServer(data)
-      else
-        @players.updateFromServer(data)
+      @environment.updateFromServer(data)
     )
 
-    pointerLock.onMouseMove(@particleSize, @particleSize * 1.5, @ws.send)
+#    pointerLock.onMouseMove(@particleSize, @particleSize * 1.5, @ws.send)
 
     instructions.addEventListener('click', (event) => pointerLock.lockPointer())
 
@@ -45,4 +40,4 @@ class Scene
     requestAnimationFrame(@animate)
     @renderer.render(@scene, @camera)
     @stats.update()
-    @players.update()
+#    @players.update()
