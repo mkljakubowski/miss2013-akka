@@ -21,7 +21,7 @@ class CellServer extends Actor {
         val cellName = ("cell"+cellNo)
         cellNo += 1
         val cellActorRef = context.actorOf(Props(new Cell(cellName)), name = cellName)
-        cells = cells + ( cellName -> cellActorRef )
+        cells += ( cellName -> cellActorRef )
         cellActorRef ! NewEnv(envName, envDNA)
       }
 

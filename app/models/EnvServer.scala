@@ -46,7 +46,7 @@ class EnvServer extends Actor {
     case Join(envName, channel) =>
       val newDNA = DNA()
       val envActorRef = context.actorOf(Props(new Environment(envName, channel, newDNA)), name = envName)
-      environments = environments + (envName -> envActorRef)
+      environments +=  (envName -> envActorRef)
       cellSrv ! NewEnv(envName, newDNA)
 
     case Quit(envName) =>
@@ -54,6 +54,7 @@ class EnvServer extends Actor {
       environments = environments - envName
 
     case AnotherEnv(envName) =>
+      //Co tu się dzieje?
       val asList = environments.toList
       val leftEnvs = asList.last +: asList // (envN, env1 , env2, ...)
       val rightEnvs = asList :+ asList.head // (env1, .., envN, env1)

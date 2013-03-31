@@ -9,7 +9,7 @@ class Environment
       position = new THREE.Vector3(data.x, data.y, 0)
 
       if cellName of @cells
-        @cells[cellName].update(data.energy, position)
+        @cells[cellName].update(data.energy, position, data.dna)
 
     if data.type == "Register"
       position = new THREE.Vector3(data.x, data.y, 0)

@@ -1,30 +1,32 @@
 package models
 
-import util.Random
+import math.random
+import scala.math.abs
 import play.api.libs.json.{Json, JsValue}
 
-class DNA {
-  var r = 0.0
-  var g = 0.0
-  var b = 0.0
-
-  def randomize : DNA = {
-    r = Random.nextDouble()
-    g = Random.nextDouble()
-    b = Random.nextDouble()
-    this
-  }
+case class DNA(r: Double, g: Double, b: Double) {
 
   def -(env:DNA): Double = {
-    (env.r - r) + (env.g - g) + (env.b - b)
+    abs((env.r - r)) + abs((env.g - g)) + abs((env.b - b))
   }
 
   def asJSON() : JsValue =
-    Json.obj("r" -> r, "g" -> g, "b" -> b)
+    Json.obj(
+      "r" -> r,
+      "g" -> g,
+      "b" -> b)
 }
 
 object DNA {
-  def apply() : DNA = new DNA().randomize
-  def cross(parentA : DNA, parentB : DNA) : DNA = ???
-  def mutate(parent : DNA) : DNA = ???
+  def apply() : DNA = DNA(random,random,random)
+
+  def cross(parentA: DNA, parentB: DNA) = DNA(parentA.r,parentB.g,parentA.b)
+
+  def mutate(sourceDna: DNA): DNA = (random*3).toInt match {
+    case 0 => DNA(random,sourceDna.g, sourceDna.b)
+    case 1 => DNA(sourceDna.r,random,sourceDna.b)
+    case 2 => DNA(sourceDna.r,sourceDna.g,random)
+  }
+
+
 }

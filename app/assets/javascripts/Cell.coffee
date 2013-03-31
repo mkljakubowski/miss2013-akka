@@ -26,15 +26,17 @@ class Cell
     @sprite.position.y = position.y
     @scene.add(@sprite)
 
-  update: (energy, position) ->
+  update: (energy, position, @dna) ->
     @color.setRGB(@dna.r, @dna.g, @dna.b)
+    @sprite.material.color = @color
     @adjustSizeToEnergy(energy)
     @sprite.position.set(position.x, position.y, 0 )
 
 
   adjustSizeToEnergy: (energy) ->
-    @sprite.scale.x = energy/@initialEnergy
-    @sprite.scale.y = energy/@initialEnergy
+    scale = (energy/@initialEnergy)
+    @sprite.scale.x = scale
+    @sprite.scale.y = scale
 
   createMaterial: () ->
     tex = circleTexture.clone()
