@@ -5,6 +5,7 @@ import play.api.libs.json.JsValue
 
 case class Position(x: Double, y: Double, z: Double){
   def this(x:Double, y:Double) = this(x,y,0.0)
+  def isNear(other : Position) : Boolean = ???
 }
 
 sealed abstract class ServerMessage
