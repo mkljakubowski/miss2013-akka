@@ -26,4 +26,6 @@ case class UpdateSquares()                                                      
 case class GetUniqueId  ()                                                        extends ServerMessage
 case class Update       ()                                                        extends ServerMessage
 case class NewEnv       (envName: String, envDNA : DNA)                           extends ServerMessage
-case class UpdateCell   (cellName: String, pos : Position, r : Int, dna : DNA)    extends ServerMessage
+case class UpdateCell   (cellName: String, pos : Position, r : Double)            extends ServerMessage
+case class Register     (cellName: String, pos : Position, r : Double, dna : DNA) extends ServerMessage
+case class Unregister   (cellName: String)                                        extends ServerMessage

@@ -21,11 +21,12 @@ class Cell(name : String) extends Actor {
     case NewEnv(envName: String, envDNA : DNA) =>
       targetDNA = envDNA
       envId = envName
-      env = sender
+      env = context.actorFor("../../"+envName)
+      env ! Register(context.self.path.name, pos, radius, dna)
 
     case Update() =>
       updatePosition()
-      sender ! UpdateCell(name, pos, radius, dna)
+      env ! UpdateCell(name, pos, radius)
 
   }
 
@@ -41,4 +42,5 @@ class Cell(name : String) extends Actor {
   def outOfBoundries : Boolean =
     pos.x > Environment.screenSize.x || pos.x < -Environment.screenSize.x || pos.y < -Environment.screenSize.y || pos.y > Environment.screenSize.y
 
+//  override def postStop() = println("stopped " + context.self.path.name)
 }

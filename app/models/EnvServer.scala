@@ -1,6 +1,6 @@
 package models
 
-import akka.actor.{ActorRef, Actor, Props}
+import akka.actor.{PoisonPill, ActorRef, Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -36,34 +36,21 @@ object EnvServer {
 
 class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
+  var cellSrv = context.actorOf(Props(new CellServer()), name = "cellSrv")
   var id: Int = 0
-
-  Akka.system.scheduler.schedule(0 seconds, 100 milliseconds) {
-    environments.foreach( _._2 ! Update() )
-  }
 
   def receive = {
     case GetUniqueId() =>
       sender ! {id += 1; id}
 
     case Join(envName, channel) =>
-      val envActorRef = context.actorOf(Props(new Environment(envName, channel, DNA())), name = envName)
+      val newDNA = DNA()
+      val envActorRef = context.actorOf(Props(new Environment(envName, channel, newDNA)), name = envName)
       environments = environments + (envName -> envActorRef)
+      cellSrv ! NewEnv(envName, newDNA)
 
-//    case Event(username, event) =>
-//      def getPos(axis: String) = (event \ axis).asOpt[Int]
-//
-//      (getPos("x"), getPos("y"), getPos("z")) match {
-//        case (Some(x), Some(y), Some(z)) =>
-//          val move = Move(username, Position(x, y, z))
-//          players.values.foreach(_ ! move)
-//          squares ! move
-//
-//        case _ =>
-//          play.Logger.warn("Unable to parse message %s from user %s".format(event.toString(), username))
-//      }
-//
     case Quit(envName) =>
+      environments.get(envName).map( _ ! "kill")
       environments = environments - envName
 
     case otherMsg =>

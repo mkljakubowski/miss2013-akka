@@ -4,18 +4,18 @@ import util.Random
 import play.api.libs.json.{Json, JsValue}
 
 class DNA {
-  var r = Random.nextInt(255)
-  var g = Random.nextInt(255)
-  var b = Random.nextInt(255)
+  var r = 0.0
+  var g = 0.0
+  var b = 0.0
 
   def randomize : DNA = {
-    r = Random.nextInt(255)
-    g = Random.nextInt(255)
-    b = Random.nextInt(255)
+    r = Random.nextDouble()
+    g = Random.nextDouble()
+    b = Random.nextDouble()
     this
   }
 
-  def -(env:DNA): Int = {
+  def -(env:DNA): Double = {
     (env.r - r) + (env.g - g) + (env.b - b)
   }
 
@@ -25,4 +25,6 @@ class DNA {
 
 object DNA {
   def apply() : DNA = new DNA().randomize
+  def cross(parentA : DNA, parentB : DNA) : DNA = ???
+  def mutate(parent : DNA) : DNA = ???
 }

@@ -1,9 +1,3 @@
-sqaureTextures = [
-  THREE.ImageUtils.loadTexture("/assets/images/square0.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square1.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square2.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square3.png"),
-]
 
 canvas = document.createElement( 'canvas' )
 canvas.width = 32
@@ -26,13 +20,13 @@ class Cell
     @sprite.position.y = position.y
     @scene.add(@sprite)
 
-  update: (@dna, radius, position) ->
-    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
+  update: (radius, position) ->
+    @color.setRGB(@dna.r, @dna.g, @dna.b)
     @sprite.position.set(position.x, position.y, 0 )
 
   createMatrial: () ->
     tex = circleTexture.clone()
     tex.needsUpdate = true
-    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
+    @color.setRGB(@dna.r, @dna.g, @dna.b)
     new THREE.MeshBasicMaterial( {map: tex, color : @color} )
 
