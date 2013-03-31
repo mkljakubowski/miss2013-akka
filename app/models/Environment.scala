@@ -1,6 +1,6 @@
 package models
 
-import akka.actor.{Props, ActorRef, Actor}
+import akka.actor.{PoisonPill, Props, ActorRef, Actor}
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 
@@ -10,29 +10,48 @@ object Environment {
 }
 
 class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetDNA : DNA) extends Actor {
-  var cells = Map.empty[String, ActorRef]
-
-  (0 until Environment.noCellsPerEnv).foreach{ cellNo =>
-    val cellName = (envName+"cell"+cellNo)
-    val cellActorRef = context.actorOf(Props(new Cell(cellName)), name = cellName)
-    cells = cells + ( cellName -> cellActorRef )
-    cellActorRef ! NewEnv(envName, targetDNA)
-  }
+  var cells = Map.empty[String, (ActorRef, Position)]
 
   def receive = {
 
-    case Update() =>
-      cells.foreach{ _._2 ! Update() }
-
-    case UpdateCell(cellName, pos, dna, energy) =>
+    case UpdateCell(cellName, pos, energy) =>
       channel.push(Json.obj(
-        "type" -> "UpdateCell",
-        "cellName" -> cellName,
-        "x" -> pos.x,
-        "y" -> pos.y,
-        "dna" -> dna.asJSON(),
+        "type" -> "UpdateCell", 
+        "cellName" -> cellName, 
+        "x" -> pos.x, 
+        "y" -> pos.y, 
         "energy" -> energy))
 
+    case Register(cellName, pos, energy, dna) =>
+      channel.push(Json.obj(
+        "type" -> "Register", 
+        "cellName" -> cellName, 
+        "x" -> pos.x, 
+        "y" -> pos.y, 
+        "energy" -> energy, 
+        "dna" -> dna.asJSON()))
+      cells = cells + (cellName -> (context.actorFor("../cellSrv/"+cellName), pos) )
+
+    case Unregister(cellName) =>
+      channel.push(Json.obj("type" -> "Unregister", "cellName" -> cellName))
+      cells = cells - cellName
+
+    case "kill" =>
+      cells.foreach{ _._2._1 ! PoisonPill }
+      context.self ! PoisonPill
   }
+
+  def checkCollisions(cellName : String) = {
+    cells.get(cellName).map { cell =>
+      cells.filter( _._1 != cellName).foreach { otherCell =>
+        if (cell._2 isNear otherCell._2._2) {
+          //colliding
+          ???
+        }
+      }
+    }
+  }
+
+//  override def postStop() = println("stopped " + envName)
 
 }

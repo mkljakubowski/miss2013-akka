@@ -2,20 +2,18 @@ class Environment
   constructor: (@scene) ->
     @cells = {}
 
-  hexColor: (dna)->
-    r = ('0'+(Math.random()*256|0).toString(16)).slice(-2)
-    g = ('0'+(Math.random()*256|0).toString(16)).slice(-2)
-    b = ('0'+(Math.random()*256|0).toString(16)).slice(-2)
-    r + g + b
-
   updateFromServer: (data) =>
     cellName = data.cellName
 
     if data.type == "UpdateCell"
       position = new THREE.Vector3(data.x, data.y, 0)
 
-      if cellName not of @cells
-        @cells[cellName] = new Cell(cellName, data.dna, position, @scene, data.energy)
-
       if cellName of @cells
-        @cells[cellName].update(data.dna, position, data.energy)
+        @cells[cellName].update(data.energy, position)
+
+    if data.type == "Register"
+      position = new THREE.Vector3(data.x, data.y, 0)
+      @cells[cellName] = new Cell(cellName, data.dna, data.energy, position, @scene)
+
+    if data.type == "Unregister"
+      delete @cells[cellName]

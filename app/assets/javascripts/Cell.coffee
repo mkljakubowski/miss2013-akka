@@ -19,16 +19,16 @@ circleTexture = new THREE.Texture( canvas )
 circleGeo = new THREE.CircleGeometry( 1, 10, 0, 2 * Math.PI )
 
 class Cell
-  constructor: (@cellName, @dna, position, @scene, @initialEnergy) ->
+  constructor: (@cellName, @dna, @initialEnergy, position, @scene) ->
     @color = new THREE.Color()
-    @sprite = new THREE.Mesh( circleGeo, @createMaterial() )
+    @sprite = new THREE.Mesh( circleGeo, @createMatrial() )
     @sprite.position.x = position.x
     @sprite.position.y = position.y
     @scene.add(@sprite)
 
-  update: (@dna, position, newEnergyLevel) ->
-    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
-    @adjustSizeToEnergy(newEnergyLevel)
+  update: (energy, position) ->
+    @color.setRGB(@dna.r, @dna.g, @dna.b)
+    @adjustSizeToEnergy(energy)
     @sprite.position.set(position.x, position.y, 0 )
 
 
@@ -39,6 +39,6 @@ class Cell
   createMaterial: () ->
     tex = circleTexture.clone()
     tex.needsUpdate = true
-    @color.setRGB(@dna.r/255, @dna.g/255, @dna.b/255)
+    @color.setRGB(@dna.r, @dna.g, @dna.b)
     new THREE.MeshBasicMaterial( {map: tex, color : @color} )
 

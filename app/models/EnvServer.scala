@@ -1,6 +1,6 @@
 package models
 
-import akka.actor.{ActorRef, Actor, Props}
+import akka.actor.{PoisonPill, ActorRef, Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -36,35 +36,30 @@ object EnvServer {
 
 class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
+  var cellSrv = context.actorOf(Props(new CellServer()), name = "cellSrv")
   var id: Int = 0
-
-  Akka.system.scheduler.schedule(0 seconds, 100 milliseconds) {
-    environments.foreach( _._2 ! Update() )
-  }
 
   def receive = {
     case GetUniqueId() =>
       sender ! {id += 1; id}
 
     case Join(envName, channel) =>
-      val envActorRef = context.actorOf(Props(new Environment(envName, channel, DNA())), name = envName)
-      environments += (envName -> envActorRef)
+      val newDNA = DNA()
+      val envActorRef = context.actorOf(Props(new Environment(envName, channel, newDNA)), name = envName)
+      environments = environments + (envName -> envActorRef)
+      cellSrv ! NewEnv(envName, newDNA)
 
-//    case Event(username, event) =>
-//      def getPos(axis: String) = (event \ axis).asOpt[Int]
-//
-//      (getPos("x"), getPos("y"), getPos("z")) match {
-//        case (Some(x), Some(y), Some(z)) =>
-//          val move = Move(username, Position(x, y, z))
-//          players.values.foreach(_ ! move)
-//          squares ! move
-//
-//        case _ =>
-//          play.Logger.warn("Unable to parse message %s from user %s".format(event.toString(), username))
-//      }
-//
     case Quit(envName) =>
-      environments -= envName
+      environments.get(envName).map( _ ! "kill")
+      environments = environments - envName
+
+    case AnotherEnv(envName) =>
+      val asList = environments.toList
+      val leftEnvs = asList.last +: asList // (envN, env1 , env2, ...)
+      val rightEnvs = asList :+ asList.head // (env1, .., envN, env1)
+      val zipped = leftEnvs zip rightEnvs // ((envN,env1), (env1,env2), ...)
+      sender ! zipped.filter{ _._1._1 == envName}.head._2._1
+
 
     case otherMsg =>
       environments.values.foreach(_ ! otherMsg)
