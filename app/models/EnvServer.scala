@@ -53,6 +53,14 @@ class EnvServer extends Actor {
       environments.get(envName).map( _ ! "kill")
       environments = environments - envName
 
+    case AnotherEnv(envName) =>
+      val asList = environments.toList
+      val leftEnvs = null :: asList // (null, env1 , env2)
+      val rightEnvs = null ::: asList // (env1, .., envN, null)
+      val zipped = leftEnvs zip rightEnvs // ((null,env1), (env1,env2), ...)
+      sender ! zipped.filter{ _._1._1 == envName}.head._2._1
+
+
     case otherMsg =>
       environments.values.foreach(_ ! otherMsg)
   }

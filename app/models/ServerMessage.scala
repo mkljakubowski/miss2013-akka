@@ -5,7 +5,8 @@ import play.api.libs.json.JsValue
 
 case class Position(x: Double, y: Double, z: Double){
   def this(x:Double, y:Double) = this(x,y,0.0)
-  def isNear(other : Position) : Boolean = ???
+  def isNear(other : Position) : Boolean = 2.0 > Math.sqrt(
+    Math.pow((this.x - other.x),2) + Math.pow((this.y - other.y),2) + Math.pow((this.z - other.z),2))
 }
 
 sealed abstract class ServerMessage
@@ -30,3 +31,4 @@ case class NewEnv       (envName: String, envDNA : DNA)                         
 case class UpdateCell   (cellName: String, pos : Position, r : Double)            extends ServerMessage
 case class Register     (cellName: String, pos : Position, r : Double, dna : DNA) extends ServerMessage
 case class Unregister   (cellName: String)                                        extends ServerMessage
+case class AnotherEnv   (envName: String)                                         extends ServerMessage
