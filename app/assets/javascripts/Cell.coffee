@@ -21,7 +21,7 @@ circleGeo = new THREE.CircleGeometry( 1, 10, 0, 2 * Math.PI )
 class Cell
   constructor: (@cellName, @dna, @initialEnergy, position, @scene) ->
     @color = new THREE.Color()
-    @sprite = new THREE.Mesh( circleGeo, @createMatrial() )
+    @sprite = new THREE.Mesh( circleGeo, @createMaterial() )
     @sprite.position.x = position.x
     @sprite.position.y = position.y
     @scene.add(@sprite)

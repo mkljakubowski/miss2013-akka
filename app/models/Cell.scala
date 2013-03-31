@@ -32,7 +32,7 @@ class Cell(name : String) extends Actor {
 
     case Update() =>
       updatePosition()
-      energy -=10 //PBATKO TODO: proof of concept, replace it with Cell energy transfers (stealing, reproduction)
+      energy -=2 //PBATKO TODO: proof of concept, replace it with Cell energy transfers (stealing, reproduction)
       env ! UpdateCell(name, pos, energy)
 
   }
