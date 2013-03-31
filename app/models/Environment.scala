@@ -24,8 +24,14 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
     case Update() =>
       cells.foreach{ _._2 ! Update() }
 
-    case UpdateCell(cellName, pos, r, dna) =>
-      channel.push(Json.obj("type" -> "UpdateCell", "cellName" -> cellName, "x" -> pos.x, "y" -> pos.y, "r" -> r, "dna" -> dna.asJSON()))
+    case UpdateCell(cellName, pos, dna, energy) =>
+      channel.push(Json.obj(
+        "type" -> "UpdateCell",
+        "cellName" -> cellName,
+        "x" -> pos.x,
+        "y" -> pos.y,
+        "dna" -> dna.asJSON(),
+        "energy" -> energy))
 
   }
 

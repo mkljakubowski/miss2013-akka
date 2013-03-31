@@ -15,7 +15,7 @@ class Environment
       position = new THREE.Vector3(data.x, data.y, 0)
 
       if cellName not of @cells
-        @cells[cellName] = new Cell(cellName, data.dna, data.r, position, @scene)
+        @cells[cellName] = new Cell(cellName, data.dna, position, @scene, data.energy)
 
       if cellName of @cells
-        @cells[cellName].update(data.dna, data.r, position)
+        @cells[cellName].update(data.dna, position, data.energy)

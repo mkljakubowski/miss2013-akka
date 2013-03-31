@@ -48,7 +48,7 @@ class EnvServer extends Actor {
 
     case Join(envName, channel) =>
       val envActorRef = context.actorOf(Props(new Environment(envName, channel, DNA())), name = envName)
-      environments = environments + (envName -> envActorRef)
+      environments += (envName -> envActorRef)
 
 //    case Event(username, event) =>
 //      def getPos(axis: String) = (event \ axis).asOpt[Int]
@@ -64,7 +64,7 @@ class EnvServer extends Actor {
 //      }
 //
     case Quit(envName) =>
-      environments = environments - envName
+      environments -= envName
 
     case otherMsg =>
       environments.values.foreach(_ ! otherMsg)

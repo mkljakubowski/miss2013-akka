@@ -8,7 +8,8 @@ class Cell(name : String) extends Actor {
   val dna : DNA = DNA()
   var targetDNA : DNA = null
   def fitness = dna - targetDNA
-  def radius = 5 + fitness
+  //PBATKO TODO: radius unecessary? it's ui responsibility
+//  def radius = 5 + fitness
   var pos : Position = new Position(Random.nextDouble()*200 - 100, Random.nextDouble()*100 - 50)
   var envId : String = ""
   var energy = 50
@@ -25,7 +26,8 @@ class Cell(name : String) extends Actor {
 
     case Update() =>
       updatePosition()
-      sender ! UpdateCell(name, pos, radius, dna)
+      energy -=10 //PBATKO TODO: proof of concept, replace it with Cell energy transfers (stealing, reproduction)
+      sender ! UpdateCell(name, pos, dna, energy)
 
   }
 

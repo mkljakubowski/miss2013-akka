@@ -1,6 +1,7 @@
 package models
 
 import util.Random
+import scala.math.abs
 import play.api.libs.json.{Json, JsValue}
 
 class DNA {
@@ -16,7 +17,7 @@ class DNA {
   }
 
   def -(env:DNA): Int = {
-    (env.r - r) + (env.g - g) + (env.b - b)
+    (abs (env.r - r)) + (abs (env.g - g)) + (abs (env.b - b))
   }
 
   def asJSON() : JsValue =
