@@ -6,7 +6,7 @@ import play.api.libs.json.{Json, JsValue}
 
 object Environment {
   val noCellsPerEnv = 100
-  val screenSize = new Position(100, 50)
+  val screenSize = Position(100, 50)
 }
 
 class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetDNA: DNA) extends Actor {

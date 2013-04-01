@@ -11,7 +11,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.stm._
 
 
-class Cell(name: String, initEnergy: Int = 50) extends Actor {
+class Cell(name: String, initEnergy: Int = 50, initDna: DNA = DNA(),initPos: Position = Position()) extends Actor {
   implicit val timeout = Timeout(1 second)
   var dna: DNA = DNA()
   var targetDNA: DNA = null
@@ -22,13 +22,13 @@ class Cell(name: String, initEnergy: Int = 50) extends Actor {
   }
 
   def withPosition(newPos: Position): Cell = {
-    pos = new Position(newPos.x, newPos.y)
+    pos = Position(newPos.x, newPos.y)
     this
   }
 
   def fitness = dna.distance(targetDNA)
 
-  var pos: Position = new Position(Random.nextDouble() * 200 - 100, Random.nextDouble() * 100 - 50)
+  var pos: Position = Position(Random.nextDouble() * 200 - 100, Random.nextDouble() * 100 - 50)
   var envId: String = ""
   var energy = initEnergy
   var energyStm = Ref(0)
@@ -103,7 +103,7 @@ class Cell(name: String, initEnergy: Int = 50) extends Actor {
   def updatePosition() = {
     val x = (pos.x + sin(direction) * speed)
     val y = (pos.y + cos(direction) * speed)
-    pos = new Position(x, y)
+    pos = Position(x, y)
     speed += Random.nextDouble() - 0.5
     direction += Random.nextDouble() - 0.5
     if (outOfBoundries) direction -= Pi
