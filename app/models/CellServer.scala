@@ -29,7 +29,7 @@ class CellServer extends Actor {
     case NewCell(envName: String, envDna: DNA, cellDna: DNA, energy: Int, pos: Position) =>
       val cellName = ("cell" + cellNo)
       cellNo += 1
-      val cellActorRef = context.actorOf(Props(new Cell(cellName,energy).withDna(cellDna).withPosition(pos)), name = cellName)
+      val cellActorRef = context.actorOf(Props(new Cell(cellName,energy,cellDna,pos)), name = cellName)
       cells += (cellName -> cellActorRef)
       cellActorRef ! NewEnv(envName, envDna)
   }

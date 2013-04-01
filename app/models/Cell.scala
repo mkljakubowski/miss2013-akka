@@ -16,16 +16,6 @@ class Cell(name: String, initEnergy: Int = 50, initDna: DNA = DNA(),initPos: Pos
   var dna: DNA = DNA()
   var targetDNA: DNA = null
 
-  def withDna(newDna: DNA): Cell = {
-    dna = newDna
-    this
-  }
-
-  def withPosition(newPos: Position): Cell = {
-    pos = Position(newPos.x, newPos.y)
-    this
-  }
-
   def fitness = dna.distance(targetDNA)
 
   var pos: Position = Position(Random.nextDouble() * 200 - 100, Random.nextDouble() * 100 - 50)
