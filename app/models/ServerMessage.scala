@@ -1,5 +1,6 @@
 package models
 
+import cell.DNA
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.JsValue
 import scala.math.pow

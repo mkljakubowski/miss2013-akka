@@ -1,4 +1,4 @@
-package models
+package models.cell
 
 import math.random
 import scala.math.pow

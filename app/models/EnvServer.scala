@@ -4,6 +4,7 @@ import akka.actor.{PoisonPill, ActorRef, Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
+import cell.DNA
 import scala.concurrent.duration._
 
 import play.api.libs.concurrent.Execution.Implicits._

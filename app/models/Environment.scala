@@ -1,6 +1,7 @@
 package models
 
 import akka.actor.{PoisonPill, Props, ActorRef, Actor}
+import cell.DNA
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 

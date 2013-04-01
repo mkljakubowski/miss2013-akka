@@ -1,6 +1,7 @@
 package models
 
 import akka.actor.{Props, Actor, ActorRef}
+import cell.{DNA, Cell}
 import play.libs.Akka
 
 import scala.concurrent.duration._
