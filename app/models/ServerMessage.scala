@@ -3,7 +3,7 @@ package models
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.JsValue
 import scala.math.pow
-
+import akka.actor.{PoisonPill, ActorRef, Actor, Props}
 
 sealed abstract class ServerMessage
 
@@ -12,23 +12,18 @@ case class Join(username: String, channel: Concurrent.Channel[JsValue]) extends 
 
 case class Event(username: String, event: JsValue) extends ServerMessage
 
-//case class Move         (username: String, position: Position)                    extends ServerMessage
-//case class Collision    (username: String, position: Position)                    extends ServerMessage
-//case class UpdateScore  (username: String, score: Int)                            extends ServerMessage
 case class Quit(username: String) extends ServerMessage
-
-//case class PathClosed   (trail: List[Position])                                   extends ServerMessage
-//case class UpdateSquare (id: Int, size: Double, x: Int, y: Int, color: Int)       extends ServerMessage
-//case class RemoveSquare (id: Int)                                                 extends ServerMessage
-//case class IncreaseScore(bonus: Int)                                              extends ServerMessage
-//case class UpdateSquares()                                                        extends ServerMessage
 
 //creatures
 case class GetUniqueId() extends ServerMessage
 
 case class Update() extends ServerMessage
 
-case class NewEnv(envName: String, envDNA: DNA) extends ServerMessage
+case class NewEnv(environment: ActorRef, envDna: DNA) extends ServerMessage
+
+//used when splitting cell into two. the cell sends it to CellServ, CellServ creates new cell a puts it in right Env,
+case class NewCell(environment: ActorRef, envDna: DNA, dna: DNA, energy: Int, pos: Position) extends ServerMessage
+
 
 case class UpdateCell(cellName: String, pos: Position, energy: Double, dna: DNA) extends ServerMessage
 
@@ -44,10 +39,8 @@ case class SuckEnergy(cellName: String) extends ServerMessage
 case class SuckEnergyRequest(fitness: Double) extends ServerMessage
 
 //if prey cell has lower fitness success is returned
-case class SuckEnergySuccess() extends ServerMessage
+case class SuckEnergySuccess(energyTransfered: Int) extends ServerMessage
 
 //else fail is returned, receiving cell is a victim
 case class SuckEnergyFail() extends ServerMessage
 
-//used when splitting cell into two. the cell sends it to CellServ, CellServ creates new cell a puts it in right Env,
-case class NewCell(env: String, envDna: DNA, cellDna: DNA, energy: Int, pos: Position) extends ServerMessage

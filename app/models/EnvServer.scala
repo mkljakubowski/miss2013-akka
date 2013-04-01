@@ -47,10 +47,8 @@ class EnvServer extends Actor {
       val idealDna = DNA()
       val envActorRef = context.actorOf(Props(new Environment(envName, channel, idealDna)), name = envName)
       environments +=  (envName -> envActorRef)
-      cellSrv ! NewEnv(envName, idealDna)
-      channel.push(Json.obj(
-        "type" -> "TargetDna",
-        "dna" -> idealDna.asJSON()))
+      cellSrv ! NewEnv(envActorRef, idealDna)
+      channel.push(targetDnaMessage(idealDna))
 
     case Quit(envName) =>
       environments.get(envName).map( _ ! "kill")
@@ -67,5 +65,11 @@ class EnvServer extends Actor {
 
     case otherMsg =>
       environments.values.foreach(_ ! otherMsg)
+  }
+
+  def targetDnaMessage(idealDna: DNA): JsObject = {
+    Json.obj(
+      "type" -> "TargetDna",
+      "dna" -> idealDna.asJSON())
   }
 }

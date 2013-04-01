@@ -20,5 +20,5 @@ object Position {
 
   def apply(position: Position): Position = new Position(position.x,position.y,position.z)
 
-  val shortDistance = 10.0
+  val shortDistance = 5.0
 }
