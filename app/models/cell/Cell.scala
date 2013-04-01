@@ -1,7 +1,6 @@
 package models.cell
 
 import akka.actor.{ActorRef, Actor}
-import util.Random
 import scala.math._
 import akka.pattern.ask
 import akka.util.Timeout
