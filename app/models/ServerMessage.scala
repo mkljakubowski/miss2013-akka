@@ -55,3 +55,6 @@ case class CopulateRequest() extends ServerMessage
 
 //Send in resposne
 case class CopulateSuccess(dna: DNA) extends ServerMessage
+
+////Teleportation
+case class Teleport(dna: DNA, energy: Int, position: Position) extends ServerMessage

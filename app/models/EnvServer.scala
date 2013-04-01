@@ -37,6 +37,7 @@ object EnvServer {
 
 class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
+  var envDnas:Map[ActorRef,DNA] = Map.empty[ActorRef,DNA]
   var cellSrv = context.actorOf(Props(new CellServer()), name = "cellSrv")
   var id: Int = 0
 
@@ -48,12 +49,16 @@ class EnvServer extends Actor {
       val idealDna = DNA()
       val envActorRef = context.actorOf(Props(new Environment(envName, channel, idealDna)), name = envName)
       environments +=  (envName -> envActorRef)
+      val tuple: (ActorRef, DNA) = envActorRef -> idealDna
+      envDnas += tuple
       cellSrv ! NewEnv(envActorRef, idealDna)
       channel.push(targetDnaMessage(idealDna))
 
     case Quit(envName) =>
       environments.get(envName).map( _ ! "kill")
+      val ref: ActorRef = environments.get(envName).get
       environments = environments - envName
+      envDnas = envDnas - ref
 
     case AnotherEnv(envName) =>
       //Co tu się dzieje?
@@ -63,8 +68,7 @@ class EnvServer extends Actor {
       val zipped = leftEnvs zip rightEnvs // ((envN,env1), (env1,env2), ...)
       sender ! zipped.filter{ _._1._1 == envName}.head._2._1
 
-
-    case otherMsg =>
+   case otherMsg =>
       environments.values.foreach(_ ! otherMsg)
   }
 

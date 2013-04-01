@@ -15,6 +15,7 @@ import models.SuckEnergySuccess
 import models.SuckEnergyRequest
 import models.NewEnv
 import models.UpdateCell
+import concurrent.{Await, Future}
 
 
 class Cell(initEnergy: Int = 50, initDna: DNA = DNA(), initPos: Position = Position()) extends Actor
@@ -42,9 +43,13 @@ with EnergyContainer {
       localEnvironment ! Register(context.self.path.name, position, energy, getDna)
 
     case Update() =>
-      move()
-      mutate()
-      localEnvironment ! UpdateCell(context.self.path.name, position, energy, dna)
+      if (teleport) {
+        switchEnv()
+      } else {
+        move()
+        mutate()
+        localEnvironment ! UpdateCell(context.self.path.name, position, energy, dna)
+      }
 
     case SuckEnergy(targetCell) =>
       targetCell ! SuckEnergyRequest(fitness)
@@ -112,35 +117,41 @@ with EnergyContainer {
     energy = newEnergy
   }
 
+
+  def teleport = scala.math.random < 0.1
+
   def enoughEnergy = energy > 75
 
   def spawnChild(otherDna: DNA) = {
-    val childDna = DNA.cross(dna,otherDna)
-    println("Spawn Child")
+    val childDna = DNA.cross(dna, otherDna)
+//    println("Spawn Child")
     cellServer ! NewCell(localEnvironment, environmentIdealDna, childDna, 50, position)
   }
 
 
   def switchEnv() = {
-    (masterServer ? AnotherEnv(localEnvironment.path.name)).map {
+    val future: Future[Any] = masterServer ? AnotherEnv(localEnvironment.path.name)
+    val result: Any = Await.result(future, 1.second)
+    result match {
       case newEnvName: String if (localEnvironment.path.name != newEnvName) =>
         localEnvironment ! Unregister(context.self.path.name)
         localEnvironment = context.actorFor("../../" + newEnvName)
         localEnvironment ! Register(context.self.path.name, position, energy, dna)
+        println("Teleport!")
       case _ =>
     }
+
+
   }
 
   def dead: Receive = {
     case _ ⇒ println("ZOMBIE")
   }
 
-  import context.become
-
   def decreaseEnergy_(): Int = {
     decreaseEnergy() match {
       case Die(energyLost: Int) => {
-        become(dead)
+        context.become(dead)
         localEnvironment ! Unregister(context.self.path.name)
         context.stop(self)
         energyLost
