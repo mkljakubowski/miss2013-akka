@@ -1,7 +1,7 @@
 package models
 
 import math._
-import models.Position
+
 
 case class Position(x: Double, y: Double, z: Double) {
 
@@ -12,5 +12,5 @@ case class Position(x: Double, y: Double, z: Double) {
 }
 
 object Position{
-  val shortDistance = 5.0
+  val shortDistance = 10.0
 }

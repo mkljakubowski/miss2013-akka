@@ -1,13 +1,17 @@
 package models
 
 import math.random
-import scala.math.abs
+import scala.math.pow
+import scala.math.sqrt
 import play.api.libs.json.{Json, JsValue}
 
 case class DNA(r: Double, g: Double, b: Double) {
 
-  def -(env:DNA): Double = {
-    abs((env.r - r)) + abs((env.g - g)) + abs((env.b - b))
+  def distance(env:DNA): Double = {
+    val a = env.r - r
+    val b = env.g - g
+    val c = env.b - b
+    sqrt(a*a + b*b + c*c)
   }
 
   def asJSON() : JsValue =
@@ -23,10 +27,12 @@ object DNA {
   def cross(parentA: DNA, parentB: DNA) = DNA(parentA.r,parentB.g,parentA.b)
 
   def mutate(sourceDna: DNA): DNA = (random*3).toInt match {
-    case 0 => DNA(random,sourceDna.g, sourceDna.b)
-    case 1 => DNA(sourceDna.r,random,sourceDna.b)
-    case 2 => DNA(sourceDna.r,sourceDna.g,random)
+    case 0 => DNA(mutateColor(sourceDna.r),sourceDna.g, sourceDna.b)
+    case 1 => DNA(sourceDna.r,mutateColor(sourceDna.g),sourceDna.b)
+    case 2 => DNA(sourceDna.r,sourceDna.g,mutateColor(sourceDna.b))
   }
+
+  def mutateColor(old: Double) = (old + random)/2
 
 
 }

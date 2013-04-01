@@ -15,5 +15,8 @@ class Environment
       position = new THREE.Vector3(data.x, data.y, 0)
       @cells[cellName] = new Cell(cellName, data.dna, data.energy, position, @scene)
 
+    if data.type == "TargetDna"
+      @targetDna = new TargetDna(data.dna,@scene)
+
     if data.type == "Unregister"
       delete @cells[cellName]

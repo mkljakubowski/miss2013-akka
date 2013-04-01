@@ -44,10 +44,13 @@ class EnvServer extends Actor {
       sender ! {id += 1; id}
 
     case Join(envName, channel) =>
-      val newDNA = DNA()
-      val envActorRef = context.actorOf(Props(new Environment(envName, channel, newDNA)), name = envName)
+      val idealDna = DNA()
+      val envActorRef = context.actorOf(Props(new Environment(envName, channel, idealDna)), name = envName)
       environments +=  (envName -> envActorRef)
-      cellSrv ! NewEnv(envName, newDNA)
+      cellSrv ! NewEnv(envName, idealDna)
+      channel.push(Json.obj(
+        "type" -> "TargetDna",
+        "dna" -> idealDna.asJSON()))
 
     case Quit(envName) =>
       environments.get(envName).map( _ ! "kill")

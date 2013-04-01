@@ -48,3 +48,6 @@ case class SuckEnergySuccess() extends ServerMessage
 
 //else fail is returned, receiving cell is a victim
 case class SuckEnergyFail() extends ServerMessage
+
+//used when splitting cell into two. the cell sends it to CellServ, CellServ creates new cell a puts it in right Env,
+case class NewCell(env: String, envDna: DNA, cellDna: DNA, energy: Int, pos: Position) extends ServerMessage

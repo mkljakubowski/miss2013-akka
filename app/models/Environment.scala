@@ -5,7 +5,7 @@ import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 
 object Environment {
-  val noCellsPerEnv = 20
+  val noCellsPerEnv = 100
   val screenSize = new Position(100, 50)
 }
 
