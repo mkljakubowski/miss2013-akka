@@ -13,20 +13,21 @@ import scala.concurrent.stm._
 
 class Cell(name: String, initEnergy: Int = 50, initDna: DNA = DNA(),initPos: Position = Position()) extends Actor {
   implicit val timeout = Timeout(1 second)
-  var dna: DNA = DNA()
-  var targetDNA: DNA = null
 
-  def fitness = dna.distance(targetDNA)
-
-  var pos: Position = Position(Random.nextDouble() * 200 - 100, Random.nextDouble() * 100 - 50)
-  var envId: String = ""
+  var dna: DNA = initDna
+  var pos: Position = initPos
   var energy = initEnergy
-  var energyStm = Ref(0)
+
+  var targetDNA: DNA = null
+  var envId: String = ""
+//  var energyStm = Ref(0)
   var speed = 0.0
   var direction = Random.nextDouble() * Pi * 2
   var localEnvironment: ActorRef = null
   val masterServer: ActorRef = context.actorFor("../..")
-  val energyLimit = 10
+  val energyLimit = 100
+
+  def fitness = dna.distance(targetDNA)
 
   def receive = {
 
@@ -61,7 +62,7 @@ class Cell(name: String, initEnergy: Int = 50, initDna: DNA = DNA(),initPos: Pos
     case SuckEnergyRequest(otherFitness) =>
       if (otherFitness < fitness) {
         //lower fitness == better fitness
-        println("SuckEnergyRequest!" + sender)
+//        println("SuckEnergyRequest!" + sender)
 
         //        TODO: transactor try
         //        implicit val timeout = Timeout(5 seconds)
@@ -144,7 +145,7 @@ class Cell(name: String, initEnergy: Int = 50, initDna: DNA = DNA(),initPos: Pos
     if (energy > energyLimit) {
       var oldEnergy = energy
       energy = energy / 2
-      println("Old energy: " + oldEnergy + ", newEnergy1: " + energy)
+//      println("Old energy: " + oldEnergy + ", E1: " + energy + ", E2: " + (oldEnergy - energy))
       context.actorFor("..") ! NewCell(envId, targetDNA, dna, oldEnergy - energy, pos)
     }
   }

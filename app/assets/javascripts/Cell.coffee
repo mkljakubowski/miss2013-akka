@@ -35,8 +35,12 @@ class Cell
 
   adjustSizeToEnergy: (energy) ->
     scale = (energy/@initialEnergy)
+#    scale*=scale
     @sprite.scale.x = scale
     @sprite.scale.y = scale
+
+  removeFromScene: () ->
+     @scene.remove(@sprite)
 
   createMaterial: () ->
     tex = circleTexture.clone()

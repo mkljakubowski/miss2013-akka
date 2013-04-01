@@ -19,4 +19,6 @@ class Environment
       @targetDna = new TargetDna(data.dna,@scene)
 
     if data.type == "Unregister"
+#      alert(@cells[cellName])
+      @cells[cellName].removeFromScene()
       delete @cells[cellName]

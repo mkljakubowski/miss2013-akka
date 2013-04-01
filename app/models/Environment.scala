@@ -36,6 +36,7 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
       cells += (cellName ->(getActorRefForCell(cellName), pos))
 
     case Unregister(cellName) =>
+      println("Unregister")
       channel.push(Json.obj("type" -> "Unregister", "cellName" -> cellName))
       cells = cells - cellName
 
