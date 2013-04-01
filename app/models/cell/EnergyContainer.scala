@@ -27,13 +27,14 @@ trait EnergyContainer {
   }
 
   def increaseEnergy(energyGained: Int): EnergyGain = {
-    val oldEnergy = getEnergy
-    val newEnergy = oldEnergy + energyGained
+    val newEnergy = getEnergy + energyGained
     if (newEnergy > EnergyContainer.energyLimit) {
-      val energies = splitHighEnergy(oldEnergy)
+      val energies = splitHighEnergy(newEnergy)
+      println(newEnergy + ":" + energies._1 + "+" + energies._2)
       setEnergy(energies._1)
       Split(energies._2)
     } else {
+      setEnergy(newEnergy)
       Gain()
     }
   }

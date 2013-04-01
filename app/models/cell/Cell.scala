@@ -26,9 +26,8 @@ with EnergyContainer {
 
   implicit val timeout = Timeout(1 second)
 
-  var position: Position = initPos
-  //SpaceAware
-  var energy = initEnergy
+  var position: Position = initPos //SpaceAware
+  var energy = initEnergy // EnergyContainer
   var dna: DNA = initDna //EvolvingCreature
 
   var environmentIdealDna: DNA = null
@@ -101,8 +100,6 @@ with EnergyContainer {
   }
 
   import context.become
-
-  val energyDecreaseStep = 10
 
   def decreaseEnergy_(): Int = {
     decreaseEnergy() match {
