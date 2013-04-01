@@ -52,20 +52,6 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
     context.actorFor("../cellSrv/" + cellName)
   }
 
-  //  def checkCollisions(cellName: String) {
-  //    if (cells.size > 2) {
-  //      cells.foreach(
-  //
-  //      )
-  //      val list: (ActorRef, Position) = cells.values.toList(1)
-  ////      println(list._1)
-  //      list._1 ! SuckEnergy(cellName)
-  //    }
-  //    else {
-  //      println("Too small")
-  //    }
-  //  }
-
   def checkCollisions(cellName: String) {
     val option: Option[(ActorRef, Position)] = cells.get(cellName)
     option.map {
@@ -74,12 +60,17 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
           .foreach {
           otherCell =>
             if (cell._2 isNear otherCell._2._2) {
-              cell._1 ! SuckEnergy(otherCell._1)
+              collisionAction(cell._1, otherCell._2._1)
             }
         }
     }
   }
 
-  //  override def postStop() = println("stopped " + envName)
+  def collisionAction(cell: ActorRef, otherCell: ActorRef ){
+      (scala.math.random*2).toInt match {
+        case 0 =>  cell ! SuckEnergy(otherCell)
+        case 1 =>  cell ! Copulate(otherCell)
+      }
+  }
 
 }

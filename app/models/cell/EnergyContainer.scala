@@ -15,14 +15,14 @@ trait EnergyContainer {
   def getEnergy: Int
   def setEnergy(newEnergy: Int)
 
-  def decreaseEnergy(): EnergyLoss = {
+  def decreaseEnergy(decreaseStep: Int = EnergyContainer.energyDecreaseStep): EnergyLoss = {
     val oldEnergy = getEnergy
     if (oldEnergy <= EnergyContainer.energyDecreaseStep) {
       setEnergy(0)
       Die(energyLost = oldEnergy)
     } else {
-      setEnergy(oldEnergy - EnergyContainer.energyDecreaseStep)
-      LiveOn(energyLost = EnergyContainer.energyDecreaseStep)
+      setEnergy(oldEnergy - decreaseStep)
+      LiveOn(energyLost = decreaseStep)
     }
   }
 

@@ -1,7 +1,6 @@
 package models.cell
 
 import akka.actor.{ActorRef, Actor}
-import scala.math._
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
@@ -25,13 +24,16 @@ with EnergyContainer {
 
   implicit val timeout = Timeout(1 second)
 
-  var position: Position = initPos //SpaceAware
-  var energy = initEnergy // EnergyContainer
+  var position: Position = initPos
+  //SpaceAware
+  var energy = initEnergy
+  // EnergyContainer
   var dna: DNA = initDna //EvolvingCreature
 
   var environmentIdealDna: DNA = null
   var localEnvironment: ActorRef = null
   val masterServer: ActorRef = context.actorFor("../..")
+  val cellServer: ActorRef = context.actorFor("..")
 
   def receive = {
     case NewEnv(enviroment: ActorRef, envDna: DNA) =>
@@ -45,7 +47,7 @@ with EnergyContainer {
       localEnvironment ! UpdateCell(context.self.path.name, position, energy, dna)
 
     case SuckEnergy(targetCell) =>
-      context.actorFor("../" + targetCell) ! SuckEnergyRequest(fitness)
+      targetCell ! SuckEnergyRequest(fitness)
 
     case SuckEnergySuccess(energyTransfered: Int) => {
       increaseEnergy_(energyTransfered)
@@ -59,6 +61,32 @@ with EnergyContainer {
       else if (otherFitness > fitness) {
         sender ! SuckEnergyRequest(fitness)
       }
+
+    //Send from Enviroment
+    case Copulate(otherCell: ActorRef) => {
+      if (enoughEnergy) {
+        otherCell ! CopulateRequest
+      }
+    }
+
+    //Send from Cell
+    case CopulateRequest => {
+      if (enoughEnergy) {
+        //TODO there's problem when our mate is dead before spawning child, let it for now
+        //TODO eventually maybe there should be CopulatingCoordinatingActor that would use transactor to decrease energy of both parents in single transaction
+        //TODO but now let's stick to simple. naive solution
+        decreaseEnergy(25)
+        sender ! CopulateSuccess(dna)
+      }
+    }
+
+    //Send fro Cell
+    case CopulateSuccess(otherDna: DNA) => {
+      //TODO other cell gave its portion of energy, the problem is that we might no have enough of it now
+      decreaseEnergy(25)
+      spawnChild(otherDna)
+    }
+
   }
 
   //Evolving Creature
@@ -83,6 +111,15 @@ with EnergyContainer {
   def setEnergy(newEnergy: Int) = {
     energy = newEnergy
   }
+
+  def enoughEnergy = energy > 75
+
+  def spawnChild(otherDna: DNA) = {
+    val childDna = DNA.cross(dna,otherDna)
+    println("Spawn Child")
+    cellServer ! NewCell(localEnvironment, environmentIdealDna, childDna, 50, position)
+  }
+
 
   def switchEnv() = {
     (masterServer ? AnotherEnv(localEnvironment.path.name)).map {
@@ -116,7 +153,7 @@ with EnergyContainer {
     increaseEnergy(energyGained) match {
       case Gain(_) => {}
       case Split(energyGivenAway: Int) => {
-        context.actorFor("..") ! NewCell(localEnvironment, environmentIdealDna, dna, energyGivenAway, position)
+        cellServer ! NewCell(localEnvironment, environmentIdealDna, dna, energyGivenAway, position)
       }
     }
   }
