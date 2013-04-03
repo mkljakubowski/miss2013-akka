@@ -5,39 +5,37 @@ object EnergyContainer {
   val energyLimit = 100
 }
 
-sealed trait EnergyLoss
-case class Die(energyLost: Int) extends EnergyLoss
-case class LiveOn(energyLost: Int) extends EnergyLoss
-
-sealed trait EnergyGain
-case class Split(childEnergy: Int) extends EnergyGain
-case class Gain(ignore: Int = 0) extends EnergyGain
 
 trait EnergyContainer {
 
   var energy: Int
 
-  def decreaseEnergy(decreaseStep: Int = EnergyContainer.energyDecreaseStep): EnergyLoss = {
+  def die(energyLost: Int) : Int
+  def liveOn(energyLost: Int) : Int
+  def split(childEnergy: Int)
+  def gain()
+
+  def decreaseEnergy(decreaseStep: Int = EnergyContainer.energyDecreaseStep): Int = {
     if (energy <= EnergyContainer.energyDecreaseStep) {
       energy = 0
-      Die(energy)
+      die(energy)
     } else {
       energy -= decreaseStep
-      LiveOn(decreaseStep)
+      liveOn(decreaseStep)
     }
   }
 
-  def increaseEnergy(energyGained: Int): EnergyGain = {
+  def increaseEnergy(energyGained: Int)= {
     energy += energyGained
     if (energy > EnergyContainer.energyLimit) {
       val energies = splitHighEnergy(energy)
-//      println(energy + ":" + energies._1 + "+" + energies._2)
       energy = energies._1
-      Split(energies._2)
+      split(energies._2)
     } else {
-      Gain()
+      gain()
     }
   }
 
   private def splitHighEnergy(highEnergy: Int) = (highEnergy / 2, highEnergy - (highEnergy / 2))
+
 }

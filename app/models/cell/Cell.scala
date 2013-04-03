@@ -56,12 +56,12 @@ with EnergyContainer {
       targetCell ! SuckEnergyRequest(fitness)
 
     case SuckEnergySuccess(energyTransfered: Int) => {
-      increaseEnergy_(energyTransfered)
+      increaseEnergy(energyTransfered)
     }
 
     case SuckEnergyRequest(otherFitness) =>
       if (otherFitness > fitness) {
-        val energySucked = decreaseEnergy_()
+        val energySucked = decreaseEnergy()
         sender ! SuckEnergySuccess(energySucked)
       }
       else if (otherFitness > fitness) {
@@ -108,7 +108,6 @@ with EnergyContainer {
         localEnvironment ! Unregister(context.self.path.name)
         localEnvironment = context.actorFor("../../" + newEnvName)
         localEnvironment ! Register(context.self.path.name, position, energy, dna)
-//        println("Teleport!")
       case _ =>
     }
   }
@@ -117,26 +116,20 @@ with EnergyContainer {
     case _ ⇒ println("ZOMBIE")
   }
 
-  def decreaseEnergy_(): Int = {
-    decreaseEnergy() match {
-      case Die(energyLost: Int) => {
-        context.become(dead)
-        context.parent ! context.self.path.name
-        localEnvironment ! Unregister(context.self.path.name)
-        context.stop(self)
-        energyLost
-      }
-      case LiveOn(energyLost: Int) => energyLost
-    }
+  def die(dieEnergy : Int): Int = {
+    context.become(dead)
+    context.parent ! context.self.path.name
+    localEnvironment ! Unregister(context.self.path.name)
+    context.stop(self)
+    energy
   }
 
-  def increaseEnergy_(energyGained: Int) {
-    increaseEnergy(energyGained) match {
-      case Gain(_) => {}
-      case Split(energyGivenAway: Int) => {
-        cellServer ! NewCell(localEnvironment, environmentIdealDna, dna, energyGivenAway, position)
-      }
-    }
+  def liveOn(energyLost: Int) : Int = energyLost
+
+  def gain() = {}
+
+  def split(energyGivenAway: Int) = {
+    cellServer ! NewCell(localEnvironment, environmentIdealDna, dna, energyGivenAway, position)
   }
 
 }
