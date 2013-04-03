@@ -34,6 +34,7 @@ class Cell
 
 
   adjustSizeToEnergy: (energy) ->
+    console.log(energy) if energy>95
     scale = (energy/@initialEnergy)
     scale*=(scale*scale)
     @sprite.scale.x = scale

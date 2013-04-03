@@ -32,7 +32,7 @@ trait EnergyContainer {
     energy += energyGained
     if (energy > EnergyContainer.energyLimit) {
       val energies = splitHighEnergy(energy)
-      println(energy + ":" + energies._1 + "+" + energies._2)
+//      println(energy + ":" + energies._1 + "+" + energies._2)
       energy = energies._1
       Split(energies._2)
     } else {

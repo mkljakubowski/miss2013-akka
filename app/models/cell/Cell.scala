@@ -49,45 +49,55 @@ with EnergyContainer {
         localEnvironment ! UpdateCell(context.self.path.name, position, energy, dna)
       }
 
-    case SuckEnergy(targetCell) =>
-      targetCell ! SuckEnergyRequest(fitness)
+    case SuckEnergy(targetCell, sourceEnv) =>
+      if (sourceEnv == localEnvironment)
+        targetCell ! SuckEnergyRequest(fitness, localEnvironment)
 
-    case SuckEnergySuccess(energyTransfered: Int) => {
-      increaseEnergy_(energyTransfered)
+    case SuckEnergySuccess(energyTransfered: Int, sourceEnv) => {
+      if (sourceEnv == localEnvironment)
+        increaseEnergy_(energyTransfered)
     }
 
-    case SuckEnergyRequest(otherFitness) =>
-      if (otherFitness > fitness) {
-        val energySucked = decreaseEnergy_()
-        sender ! SuckEnergySuccess(energySucked)
-      }
-      else if (otherFitness > fitness) {
-        sender ! SuckEnergyRequest(fitness)
+    case SuckEnergyRequest(otherFitness, sourceEnv) =>
+      if (sourceEnv == localEnvironment) {
+        if (otherFitness > fitness) {
+          val energySucked = decreaseEnergy_()
+          sender ! SuckEnergySuccess(energySucked, localEnvironment)
+        }
+        else if (otherFitness > fitness) {
+          sender ! SuckEnergyRequest(fitness, localEnvironment)
+        }
       }
 
     //Send from Enviroment
-    case Copulate(otherCell: ActorRef) => {
-      if (enoughEnergy) {
-        otherCell ! CopulateRequest
+    case Copulate(otherCell: ActorRef, sourceEnv) => {
+      if (sourceEnv == localEnvironment) {
+        if (enoughEnergy) {
+          otherCell ! CopulateRequest
+        }
       }
     }
 
     //Send from Cell
-    case CopulateRequest => {
-      if (enoughEnergy) {
-        //TODO there's problem when our mate is dead before spawning child, let it for now
-        //TODO eventually maybe there should be CopulatingCoordinatingActor that would use transactor to decrease energy of both parents in single transaction
-        //TODO but now let's stick to simple. naive solution
-        decreaseEnergy(25)
-        sender ! CopulateSuccess(dna)
+    case CopulateRequest(srcEnv) => {
+      if (srcEnv == localEnvironment) {
+        if (enoughEnergy) {
+          //TODO there's problem when our mate is dead before spawning child, let it for now
+          //TODO eventually maybe there should be CopulatingCoordinatingActor that would use transactor to decrease energy of both parents in single transaction
+          //TODO but now let's stick to simple. naive solution
+          decreaseEnergy(25)
+          sender ! CopulateSuccess(dna, localEnvironment)
+        }
       }
     }
 
     //Send fro Cell
-    case CopulateSuccess(otherDna: DNA) => {
-      //TODO other cell gave its portion of energy, the problem is that we might no have enough of it now
-      decreaseEnergy(25)
-      spawnChild(otherDna)
+    case CopulateSuccess(otherDna: DNA, sourceEnv) => {
+      if (sourceEnv == localEnvironment) {
+        //TODO other cell gave its portion of energy, the problem is that we might no have enough of it now
+        decreaseEnergy(25)
+        spawnChild(otherDna)
+      }
     }
 
   }
@@ -98,9 +108,23 @@ with EnergyContainer {
 
   def spawnChild(otherDna: DNA) = {
     val childDna = DNA.cross(dna, otherDna)
-//    println("Spawn Child")
+    //    println("Spawn Child")
     cellServer ! NewCell(localEnvironment, environmentIdealDna, childDna, 50, position)
   }
+
+  def switchEnv2() = {
+    val future: Future[Any] = masterServer ? AnotherEnv(localEnvironment.path.name)
+    val result: Any = Await.result(future, 1.second)
+    result match {
+      case newEnvName: String if (localEnvironment.path.name != newEnvName) =>
+        localEnvironment ! Unregister(context.self.path.name)
+        localEnvironment = context.actorFor("../../" + newEnvName)
+        localEnvironment ! Register(context.self.path.name, position, energy, dna)
+//        println("Teleport!")
+      case _ =>
+    }
+  }
+
 
   def switchEnv() = {
     val future: Future[Any] = masterServer ? AnotherEnv(localEnvironment.path.name)
@@ -110,10 +134,9 @@ with EnergyContainer {
         localEnvironment ! Unregister(context.self.path.name)
         localEnvironment = context.actorFor("../../" + newEnvName)
         localEnvironment ! Register(context.self.path.name, position, energy, dna)
-        println("Teleport!")
+//        println("Teleport!")
       case _ =>
     }
-
   }
 
   def dead: Receive = {
@@ -132,9 +155,15 @@ with EnergyContainer {
     }
   }
 
+  var i = 0
   def increaseEnergy_(energyGained: Int) {
     increaseEnergy(energyGained) match {
-      case Gain(_) => {}
+      case Gain(_) => {
+        if(energy > EnergyContainer.energyLimit){
+          i+=1
+          println(i + " ELimit: " + energy)
+        }
+      }
       case Split(energyGivenAway: Int) => {
         cellServer ! NewCell(localEnvironment, environmentIdealDna, dna, energyGivenAway, position)
       }

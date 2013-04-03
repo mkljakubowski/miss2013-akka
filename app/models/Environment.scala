@@ -6,7 +6,7 @@ import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 
 object Environment {
-  val noCellsPerEnv = 100
+  val noCellsPerEnv = 50
   val screenSize = Position(100, 50)
 }
 
@@ -68,8 +68,8 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
 
   def collisionAction(cell: ActorRef, otherCell: ActorRef ){
       (scala.math.random*2).toInt match {
-        case 0 =>  cell ! SuckEnergy(otherCell)
-        case 1 =>  cell ! Copulate(otherCell)
+        case 0 =>  cell ! SuckEnergy(otherCell,context.self)
+        case 1 =>  cell ! Copulate(otherCell,context.self)
       }
   }
 

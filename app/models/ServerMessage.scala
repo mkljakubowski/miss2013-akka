@@ -34,27 +34,26 @@ case class Unregister(cellName: String) extends ServerMessage
 
 case class AnotherEnv(envName: String) extends ServerMessage
 
-
 ////Energy Sucking
 //Send by Environment
-case class SuckEnergy(cell: ActorRef) extends ServerMessage
+case class SuckEnergy(cell: ActorRef,env: ActorRef) extends ServerMessage
 
 //cell that wants to suck energy sends it to its potentail prey
-case class SuckEnergyRequest(fitness: Double) extends ServerMessage
+case class SuckEnergyRequest(fitness: Double,env: ActorRef) extends ServerMessage
 
 //if prey cell has lower fitness success is returned
-case class SuckEnergySuccess(energyTransfered: Int) extends ServerMessage
+case class SuckEnergySuccess(energyTransfered: Int,env: ActorRef) extends ServerMessage
 
 
 ////Copulating
 //Send by Environment
-case class Copulate(otherCell: ActorRef) extends ServerMessage
+case class Copulate(otherCell: ActorRef, env: ActorRef) extends ServerMessage
 
 //Send by initiating Cell
-case class CopulateRequest() extends ServerMessage
+case class CopulateRequest(env: ActorRef) extends ServerMessage
 
 //Send in resposne
-case class CopulateSuccess(dna: DNA) extends ServerMessage
+case class CopulateSuccess(dna: DNA,env: ActorRef) extends ServerMessage
 
 ////Teleportation
-case class Teleport(dna: DNA, energy: Int, position: Position) extends ServerMessage
+case class Teleport(dna: DNA, energy: Int, position: Position,env: ActorRef) extends ServerMessage
