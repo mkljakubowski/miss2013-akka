@@ -1,9 +1,3 @@
-sqaureTextures = [
-  THREE.ImageUtils.loadTexture("/assets/images/square0.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square1.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square2.png"),
-  THREE.ImageUtils.loadTexture("/assets/images/square3.png"),
-]
 
 canvas = document.createElement( 'canvas' )
 canvas.width = 32

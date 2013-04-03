@@ -34,6 +34,9 @@ with EnergyContainer {
   val masterServer: ActorRef = context.actorFor("../..")
   val cellServer: ActorRef = context.actorFor("..")
 
+  def teleport = scala.math.random < 0.01
+  def enoughEnergy = energy > 95
+
   def receive = {
     case NewEnv(enviroment: ActorRef, envDna: DNA) =>
       environmentIdealDna = envDna
@@ -89,12 +92,7 @@ with EnergyContainer {
       decreaseEnergy(25)
       spawnChild(otherDna)
     }
-
   }
-
-  def teleport = scala.math.random < 0.01
-
-  def enoughEnergy = energy > 75
 
   def spawnChild(otherDna: DNA) = {
     val childDna = DNA.cross(dna, otherDna)
@@ -113,7 +111,6 @@ with EnergyContainer {
 //        println("Teleport!")
       case _ =>
     }
-
   }
 
   def dead: Receive = {

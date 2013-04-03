@@ -37,7 +37,7 @@ object EnvServer {
 
 class EnvServer extends Actor {
   var environments = Map.empty[String, ActorRef]
-  var envDnas:Map[ActorRef,DNA] = Map.empty[ActorRef,DNA]
+  var envDnas = Map.empty[ActorRef,DNA]
   var cellSrv = context.actorOf(Props(new CellServer()), name = "cellSrv")
   var id: Int = 0
 

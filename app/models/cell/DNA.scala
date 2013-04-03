@@ -19,20 +19,16 @@ case class DNA(r: Double, g: Double, b: Double) {
 object DNA {
   def apply() : DNA = DNA(random,random,random)
 
-  def cross(parentA: DNA, parentB: DNA) = DNA(parentA.r,parentB.g,parentA.b)
+  def cross(parentA: DNA, parentB: DNA) = DNA(
+    (parentA.r + parentB.r) / 2 + random/50,
+    (parentA.g + parentB.g) / 2 + random/50,
+    (parentA.b + parentB.b) / 2 + random/50)
 
-  def mutate(sourceDna: DNA): DNA = (random*3).toInt match {
-    case 0 => DNA(mutateColor(sourceDna.r),sourceDna.g, sourceDna.b)
-    case 1 => DNA(sourceDna.r,mutateColor(sourceDna.g),sourceDna.b)
-    case 2 => DNA(sourceDna.r,sourceDna.g,mutateColor(sourceDna.b))
-  }
+  def mutate(sourceDna: DNA) = cross(sourceDna, sourceDna)
 
   def mutateColor(old: Double) = (old + random)/2
 
   implicit def dnaJSON(dna: DNA): Json.JsValueWrapper =
-    Json.obj(
-      "r" -> dna.r,
-      "g" -> dna.g,
-      "b" -> dna.b)
+    Json.obj("r" -> dna.r, "g" -> dna.g, "b" -> dna.b)
 
 }
