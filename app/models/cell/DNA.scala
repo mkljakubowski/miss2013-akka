@@ -34,5 +34,6 @@ object DNA {
 
   def mutateColor(old: Double) = (old + random)/2
 
+  implicit def dnaJSON(dna: DNA): Json.JsValueWrapper = dna.asJSON()
 
 }

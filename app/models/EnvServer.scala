@@ -75,6 +75,6 @@ class EnvServer extends Actor {
   def targetDnaMessage(idealDna: DNA): JsObject = {
     Json.obj(
       "type" -> "TargetDna",
-      "dna" -> idealDna.asJSON())
+      "dna" -> idealDna)
   }
 }

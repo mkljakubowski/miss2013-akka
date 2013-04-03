@@ -5,6 +5,8 @@ import cell.DNA
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 
+import models.cell.DNA.dnaJSON
+
 object Environment {
   val noCellsPerEnv = 100
   val screenSize = Position(100, 50)
@@ -22,7 +24,7 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
         "x" -> pos.x,
         "y" -> pos.y,
         "energy" -> energy,
-        "dna" -> dna.asJSON()))
+        "dna" -> dna))
       cells += (cellName ->(getActorRefForCell(cellName), pos))
       checkCollisions(cellName)
 
@@ -33,7 +35,7 @@ class Environment(envName: String, channel: Concurrent.Channel[JsValue], targetD
         "x" -> pos.x,
         "y" -> pos.y,
         "energy" -> energy,
-        "dna" -> dna.asJSON()))
+        "dna" -> dna))
       cells += (cellName ->(getActorRefForCell(cellName), pos))
 
     case Unregister(cellName) =>
