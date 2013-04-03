@@ -26,10 +26,8 @@ with EnergyContainer {
   implicit val timeout = Timeout(1 second)
 
   var position: Position = initPos
-  //SpaceAware
   var energy = initEnergy
-  // EnergyContainer
-  var dna: DNA = initDna //EvolvingCreature
+  var dna: DNA = initDna
 
   var environmentIdealDna: DNA = null
   var localEnvironment: ActorRef = null
@@ -40,7 +38,7 @@ with EnergyContainer {
     case NewEnv(enviroment: ActorRef, envDna: DNA) =>
       environmentIdealDna = envDna
       localEnvironment = enviroment
-      localEnvironment ! Register(context.self.path.name, position, energy, getDna)
+      localEnvironment ! Register(context.self.path.name, position, energy, dna)
 
     case Update() =>
       if (teleport) {
@@ -94,30 +92,6 @@ with EnergyContainer {
 
   }
 
-  //Evolving Creature
-  override def getIdealDna: DNA = environmentIdealDna
-
-  override def getDna: DNA = dna
-
-  override def setDna(newDna: DNA) = {
-    dna = newDna
-  }
-
-  //Space Aware
-  override def getPosition: Position = position
-
-  override def setPosition(newPosition: Position) = {
-    position = newPosition
-  }
-
-  //Energy Container
-  def getEnergy: Int = energy
-
-  def setEnergy(newEnergy: Int) = {
-    energy = newEnergy
-  }
-
-
   def teleport = scala.math.random < 0.1
 
   def enoughEnergy = energy > 75
@@ -127,7 +101,6 @@ with EnergyContainer {
 //    println("Spawn Child")
     cellServer ! NewCell(localEnvironment, environmentIdealDna, childDna, 50, position)
   }
-
 
   def switchEnv() = {
     val future: Future[Any] = masterServer ? AnotherEnv(localEnvironment.path.name)
@@ -140,7 +113,6 @@ with EnergyContainer {
         println("Teleport!")
       case _ =>
     }
-
 
   }
 

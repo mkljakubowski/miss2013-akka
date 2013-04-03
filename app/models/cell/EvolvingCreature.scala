@@ -5,17 +5,16 @@ import math._
 
 trait EvolvingCreature {
 
-  def getIdealDna: DNA
-  def getDna: DNA
-  def setDna(newDna: DNA)
+  var dna: DNA
+  var environmentIdealDna: DNA
 
   def mutate() {
     if (random < EvolvingCreature.mutationProbability) {
-      setDna(DNA.mutate(getDna))
+      dna = DNA.mutate(dna)
     }
   }
 
-  def fitness: Double = EvolvingCreature.maxDistance - (getDna.distance(getIdealDna))
+  def fitness: Double = EvolvingCreature.maxDistance - (dna.distance(environmentIdealDna))
 }
 
 object EvolvingCreature {

@@ -14,11 +14,6 @@ case class DNA(r: Double, g: Double, b: Double) {
     sqrt(a*a + b*b + c*c)
   }
 
-  def asJSON() : JsValue =
-    Json.obj(
-      "r" -> r,
-      "g" -> g,
-      "b" -> b)
 }
 
 object DNA {
@@ -34,6 +29,10 @@ object DNA {
 
   def mutateColor(old: Double) = (old + random)/2
 
-  implicit def dnaJSON(dna: DNA): Json.JsValueWrapper = dna.asJSON()
+  implicit def dnaJSON(dna: DNA): Json.JsValueWrapper =
+    Json.obj(
+      "r" -> dna.r,
+      "g" -> dna.g,
+      "b" -> dna.b)
 
 }
