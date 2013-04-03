@@ -35,7 +35,6 @@ class Cell
 
   adjustSizeToEnergy: (energy) ->
     scale = (energy/@initialEnergy)
-    scale*=(scale*scale)
     @sprite.scale.x = scale
     @sprite.scale.y = scale
 
