@@ -5,8 +5,6 @@ import cell.DNA
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.{Json, JsValue}
 
-import models.cell.DNA.dnaJSON
-
 object Environment {
   val noCellsPerEnv = 100
   val screenSize = Position(100, 50)
