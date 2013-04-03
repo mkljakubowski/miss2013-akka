@@ -19,9 +19,8 @@ trait EnergyContainer {
 
   def decreaseEnergy(decreaseStep: Int = EnergyContainer.energyDecreaseStep): EnergyLoss = {
     if (energy <= EnergyContainer.energyDecreaseStep) {
-      val a = Die(energy)
       energy = 0
-      a
+      Die(energy)
     } else {
       energy -= decreaseStep
       LiveOn(decreaseStep)
@@ -32,7 +31,7 @@ trait EnergyContainer {
     energy += energyGained
     if (energy > EnergyContainer.energyLimit) {
       val energies = splitHighEnergy(energy)
-      println(energy + ":" + energies._1 + "+" + energies._2)
+//      println(energy + ":" + energies._1 + "+" + energies._2)
       energy = energies._1
       Split(energies._2)
     } else {

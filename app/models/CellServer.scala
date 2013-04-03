@@ -31,6 +31,9 @@ class CellServer extends Actor {
       val cellActorRef = context.actorOf(Props( new Cell(energy,cellDna,pos)), name = cellName)
       cells += (cellName -> cellActorRef)
       cellActorRef ! NewEnv(enviroment, envDna)
+
+    case deadCell: String =>
+      cells -= deadCell
   }
 
   def getNextCellName: String = {

@@ -124,6 +124,7 @@ with EnergyContainer {
     decreaseEnergy() match {
       case Die(energyLost: Int) => {
         context.become(dead)
+        context.parent ! context.self.path.name
         localEnvironment ! Unregister(context.self.path.name)
         context.stop(self)
         energyLost
