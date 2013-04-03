@@ -92,7 +92,7 @@ with EnergyContainer {
 
   }
 
-  def teleport = scala.math.random < 0.1
+  def teleport = scala.math.random < 0.01
 
   def enoughEnergy = energy > 75
 
@@ -110,7 +110,7 @@ with EnergyContainer {
         localEnvironment ! Unregister(context.self.path.name)
         localEnvironment = context.actorFor("../../" + newEnvName)
         localEnvironment ! Register(context.self.path.name, position, energy, dna)
-        println("Teleport!")
+//        println("Teleport!")
       case _ =>
     }
 

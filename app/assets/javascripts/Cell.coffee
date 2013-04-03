@@ -19,24 +19,23 @@ circleTexture = new THREE.Texture( canvas )
 circleGeo = new THREE.CircleGeometry( 1, 10, 0, 2 * Math.PI )
 
 class Cell
-  constructor: (@cellName, @dna, @initialEnergy, position, @scene) ->
+  constructor: (@cellName, @dna, energy, position, @scene) ->
     @color = new THREE.Color()
     @sprite = new THREE.Mesh( circleGeo, @createMaterial() )
     @sprite.position.x = position.x
     @sprite.position.y = position.y
+    @adjustSizeToEnergy(energy)
     @scene.add(@sprite)
 
   update: (energy, position, @dna) ->
-    @color.setRGB(@dna.r, @dna.g, @dna.b)
-    @sprite.material.color = @color
     @adjustSizeToEnergy(energy)
     @sprite.position.set(position.x, position.y, 0 )
 
 
   adjustSizeToEnergy: (energy) ->
-    scale = (energy/@initialEnergy)
-    @sprite.scale.x = scale
-    @sprite.scale.y = scale
+    scale = (energy/40)
+    console.log(scale) if scale > 2.5
+    @sprite.scale.set(scale, scale, 1)
 
   removeFromScene: () ->
      @scene.remove(@sprite)

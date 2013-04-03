@@ -11,7 +11,7 @@ class CellServer extends Actor {
   var cells = Map.empty[String, ActorRef]
   var cellNo = 0
 
-  Akka.system.scheduler.schedule(0 seconds, 10 milliseconds) {
+  Akka.system.scheduler.schedule(0 seconds, 150 milliseconds) {
     cells.foreach(_._2 ! Update())
   }
 

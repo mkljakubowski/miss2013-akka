@@ -13,10 +13,14 @@ class Environment
 
     if data.type == "Register"
       position = new THREE.Vector3(data.x, data.y, 0)
-      @cells[cellName] = new Cell(cellName, data.dna, data.energy, position, @scene)
+      @cells[cellName] = new Cell(cellName, data.dna, 70, position, @scene)
 
     if data.type == "TargetDna"
-      @targetDna = new TargetDna(data.dna,@scene)
+#      @targetDna = new TargetDna(data.dna,@scene)
+      console.log(data.dna)
+      cc = new THREE.Color()
+      cc.setRGB(data.dna.r, data.dna.g, data.dna.b)
+      scene.renderer.setClearColor(cc, 1)
 
     if data.type == "Unregister"
 #      alert(@cells[cellName])
