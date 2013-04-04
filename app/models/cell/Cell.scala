@@ -17,7 +17,6 @@ import models.NewEnv
 import models.UpdateCell
 import concurrent.{Await, Future}
 
-
 class Cell(initEnergy: Int = 50, initDna: DNA = DNA(), initPos: Position = Position()) extends Actor
 with SpaceAware
 with EvolvingCreature
@@ -34,7 +33,7 @@ with EnergyContainer {
   val masterServer: ActorRef = context.actorFor("../..")
   val cellServer: ActorRef = context.actorFor("..")
 
-  def teleport = scala.math.random < 0.01
+  def teleport = scala.math.random < 0.0001
   def enoughEnergy = energy > 95
 
   def receive = {

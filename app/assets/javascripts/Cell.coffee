@@ -28,7 +28,6 @@ class Cell
 
   adjustSizeToEnergy: (energy) ->
     scale = (energy/40)
-    console.log(scale) if scale > 2.5
     @sprite.scale.set(scale, scale, 1)
 
   removeFromScene: () ->
@@ -37,6 +36,6 @@ class Cell
   createMaterial: () ->
     tex = circleTexture.clone()
     tex.needsUpdate = true
-    @color.setRGB(@dna.r, @dna.g, @dna.b)
+    @color.setRGB(1-@dna.r, 1-@dna.g, 1-@dna.b)
     new THREE.MeshBasicMaterial( {map: tex, color : @color} )
 
